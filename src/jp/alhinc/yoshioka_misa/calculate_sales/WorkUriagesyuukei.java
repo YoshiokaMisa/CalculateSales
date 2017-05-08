@@ -82,11 +82,11 @@ public class WorkUriagesyuukei {
 				commoditysalemap.get(commodityCode);
 
 				if(!branchsalemap.containsKey(branchCode)){
-					System.out.println(rcdFiles.get(i).getName()+"の支店コードが不正です");
+					System.out.println(rcdFiles.get(i).getName()+"のフォーマットが不正です");
 					return;
 				}
 				if(!commoditysalemap.containsKey(commodityCode)){
-					System.out.println(rcdFiles.get(i).getName()+"の商品コードが不正です");
+					System.out.println(rcdFiles.get(i).getName()+"のフォーマットが不正です");
 					return;
 				}
 				if(rcdRead.size() !=3){
@@ -149,7 +149,7 @@ public class WorkUriagesyuukei {
 			while((s= br.readLine())!= null){
 				String[] array= s.split(",");
 				if(!array[0].matches(code) || array.length != 2){
-					System.out.println(fileExist + "定義ファイルが存在しません");
+					System.out.println(fileExist + "定義ファイルのフォーマットが不正です");
 					return false;
 				}
 				namemap.put(array[0],array[1]);
