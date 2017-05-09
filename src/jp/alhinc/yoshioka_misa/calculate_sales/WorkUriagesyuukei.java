@@ -42,8 +42,7 @@ public class WorkUriagesyuukei {
 		ArrayList<File> rcdFiles =new ArrayList<File>();
 		File[] files = dir.listFiles();
 		for (int i = 0; i <files.length; i ++){
-			if (files[i].isFile() &&
-				(files[i].getName().matches("[0-9]{8}.rcd"))){
+			if (files[i].isFile() && (files[i].getName().matches("[0-9]{8}.rcd"))){
 				rcdFiles.add(files[i]);
 			}
 		}
@@ -60,7 +59,6 @@ public class WorkUriagesyuukei {
 				System.out.println("売上ファイル名が連番になっていません");
 				return;
 			}
-
 		}
 
 		for(int i = 0; i <rcdFiles.size(); i++) {
@@ -75,9 +73,7 @@ public class WorkUriagesyuukei {
 					rcdRead.add(s);
 				}
 				String branchCode = rcdRead.get(0);
-				branchsalemap.get(branchCode);
 				String commodityCode =rcdRead.get(1);
-				commoditysalemap.get(commodityCode);
 
 				if(rcdRead.size() !=3){
 					System.out.println(rcdFiles.get(i).getName()+"のフォーマットが不正です");
@@ -91,24 +87,26 @@ public class WorkUriagesyuukei {
 					System.out.println(rcdFiles.get(i).getName()+"の商品コードが不正です");
 					return;
 				}
-
+				
+				if(!rcdRead.get(2).matches("[0-9]+$")){
+					System.out.println("予期せぬエラーが発生しました");
+				}
+		
 				long siten = Long.parseLong(rcdRead.get(2));
 				long Btotal =siten + branchsalemap.get(branchCode);
-				branchsalemap.put(branchCode,Btotal);
+								
 
 				long syouhin = Long.parseLong(rcdRead.get(2));
 				long Ctotal = syouhin +  commoditysalemap.get(commodityCode);
+				
+
+				if(Btotal >= 10000000000L || Ctotal >= 10000000000L){
+					System.out.println("合計金額が10桁を超えました");
+					return;
+				}
+				branchsalemap.put(branchCode,Btotal);
 				commoditysalemap.put(commodityCode,Ctotal);
-
-				if(Btotal >10000000000L){
-					System.out.println("合計金額が10桁を超えました");
-					return;
-				}
-				if(Ctotal >10000000000L){
-					System.out.println("合計金額が10桁を超えました");
-					return;
-				}
-
+				
 			}catch (FileNotFoundException a) {
 				System.out.println("予期せぬエラーが発生しました");
 				return;
@@ -149,13 +147,12 @@ public class WorkUriagesyuukei {
 			String s;
 			while((s= br.readLine())!= null){
 				String[] array= s.split(",");
-				if( array.length != 2){
+				if( array.length != 2 || !array[0].matches(code)){
 					System.out.println(fileExist + "定義ファイルのフォーマットが不正です");
 					return false;
 				}
-				if(!array[0].matches(code)){
-					System.out.println(fileExist + "予期せぬエラーが発生しました");
-				}
+
+
 				namemap.put(array[0],array[1]);
 				salemap.put(array[0],0L);
 			}
@@ -174,7 +171,6 @@ public class WorkUriagesyuukei {
 			}
 		}
 		return true;
-
 	}
 
 	public static boolean fileout (String dirpath, String fileName,
@@ -188,32 +184,31 @@ public class WorkUriagesyuukei {
 					}
 				});
 
-			File file = new File(dirpath,fileName);
+		File file = new File(dirpath,fileName);
+		BufferedWriter bw = null;
 
-			BufferedWriter bw = null;
-
+		try{
+			FileWriter fw;
+			fw = new FileWriter(file);
+			bw =new BufferedWriter(fw);
+			for(Entry<String, Long> entry : total){
+				bw.write(entry.getKey()+","+namemap.get(entry.getKey())+","+entry.getValue());
+				bw.newLine();
+			}
+		}catch (IOException e) {
+			System.out.println("予期せぬエラーが発生しました");
+			return false;
+		}finally{
 			try{
-				FileWriter fw;
-				fw = new FileWriter(file);
-				bw =new BufferedWriter(fw);
-				for(Entry<String, Long> entry : total){
-					bw.write(entry.getKey()+","+namemap.get(entry.getKey())+","+entry.getValue());
-					bw.newLine();
+				if(bw !=null){
+					bw.close();
 				}
 			}catch (IOException e) {
 				System.out.println("予期せぬエラーが発生しました");
 				return false;
-			}finally{
-				try{
-					if(bw !=null){
-						bw.close();
-					}
-				}catch (IOException e) {
-					System.out.println("予期せぬエラーが発生しました");
-					return false;
-				}
 			}
-			return true;
+		}
+		return true;
 
 	}
 }
