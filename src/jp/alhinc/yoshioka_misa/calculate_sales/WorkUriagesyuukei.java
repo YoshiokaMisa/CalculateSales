@@ -34,21 +34,19 @@ public class WorkUriagesyuukei {
 		if(!fileRead1(args[0],"branch.lst","支店","[0-9]{3}$",branchnamemap, branchsalemap)){
 			return;
 		}
-		if(!fileRead1(args[0],"commodity.lst","商品","[A-Z0-9]{8}",commoditynamemap, commoditysalemap)){
+		if(!fileRead1(args[0],"commodity.lst","商品","[A-Za-z0-9]{8}",commoditynamemap, commoditysalemap)){
 			return;
 		}
 
 		File dir = new File(args[0]);
 		ArrayList<File> rcdFiles =new ArrayList<File>();
 		File[] files = dir.listFiles();
-
 		for (int i = 0; i <files.length; i ++){
 			if (files[i].isFile() &&
 				(files[i].getName().matches("[0-9]{8}.rcd"))){
 				rcdFiles.add(files[i]);
 			}
 		}
-
 		for(int i =0 ;i<rcdFiles.size()-1; i++){
 			String r= rcdFiles.get(i).getName();
 			String ren= r.substring(0, 8);
@@ -81,16 +79,16 @@ public class WorkUriagesyuukei {
 				String commodityCode =rcdRead.get(1);
 				commoditysalemap.get(commodityCode);
 
-				if(!branchsalemap.containsKey(branchCode)){
+				if(rcdRead.size() !=3){
 					System.out.println(rcdFiles.get(i).getName()+"のフォーマットが不正です");
+					return;
+				}
+				if(!branchsalemap.containsKey(branchCode)){
+					System.out.println(rcdFiles.get(i).getName()+"の支店コードが不正です");
 					return;
 				}
 				if(!commoditysalemap.containsKey(commodityCode)){
-					System.out.println(rcdFiles.get(i).getName()+"のフォーマットが不正です");
-					return;
-				}
-				if(rcdRead.size() !=3){
-					System.out.println(rcdFiles.get(i).getName()+"のフォーマットが不正です");
+					System.out.println(rcdFiles.get(i).getName()+"の商品コードが不正です");
 					return;
 				}
 
@@ -103,6 +101,10 @@ public class WorkUriagesyuukei {
 				commoditysalemap.put(commodityCode,Ctotal);
 
 				if(Btotal >10000000000L){
+					System.out.println("合計金額が10桁を超えました");
+					return;
+				}
+				if(Ctotal >10000000000L){
 					System.out.println("合計金額が10桁を超えました");
 					return;
 				}
@@ -123,7 +125,7 @@ public class WorkUriagesyuukei {
 				}
 			}
 		}
-		
+
 		if(!fileout(args[0],"branch.out",branchnamemap,branchsalemap)){
 			return;
 		}
@@ -147,9 +149,12 @@ public class WorkUriagesyuukei {
 			String s;
 			while((s= br.readLine())!= null){
 				String[] array= s.split(",");
-				if(!array[0].matches(code) || array.length != 2){
+				if( array.length != 2){
 					System.out.println(fileExist + "定義ファイルのフォーマットが不正です");
 					return false;
+				}
+				if(!array[0].matches(code)){
+					System.out.println(fileExist + "予期せぬエラーが発生しました");
 				}
 				namemap.put(array[0],array[1]);
 				salemap.put(array[0],0L);
