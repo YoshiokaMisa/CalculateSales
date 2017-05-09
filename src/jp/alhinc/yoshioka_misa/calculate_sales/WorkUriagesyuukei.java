@@ -107,8 +107,7 @@ public class WorkUriagesyuukei {
 					return;
 				}
 
-			}
-			catch (FileNotFoundException a) {
+			}catch (FileNotFoundException a) {
 				System.out.println("予期せぬエラーが発生しました");
 				return;
 			}catch (IOException e) {
@@ -124,7 +123,7 @@ public class WorkUriagesyuukei {
 				}
 			}
 		}
-
+		
 		if(!fileout(args[0],"branch.out",branchnamemap,branchsalemap)){
 			return;
 		}
