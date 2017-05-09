@@ -94,7 +94,7 @@ public class WorkUriagesyuukei {
 
 
 				long commodity = Long.parseLong(rcdRead.get(2));
-				long commodityTotal = commodity +  commoditySaleMap.get(commodityCode);
+				long commodityTotal = commodity + commoditySaleMap.get(commodityCode);
 
 
 				if(branchTotal>= 10000000000L || commodityTotal >= 10000000000L){
