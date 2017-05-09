@@ -31,6 +31,7 @@ public class WorkUriagesyuukei {
 		HashMap<String, String>  commoditynamemap = new HashMap< String, String>();
 		HashMap<String, Long>  commoditysalemap = new HashMap< String, Long>();
 
+
 		if(!fileRead1(args[0],"branch.lst","支店","[0-9]{3}$",branchnamemap, branchsalemap)){
 			return;
 		}
@@ -87,18 +88,19 @@ public class WorkUriagesyuukei {
 					System.out.println(rcdFiles.get(i).getName()+"の商品コードが不正です");
 					return;
 				}
-				
+
 				if(!rcdRead.get(2).matches("[0-9]+$")){
 					System.out.println("予期せぬエラーが発生しました");
+					return;
 				}
-		
+
 				long siten = Long.parseLong(rcdRead.get(2));
 				long Btotal =siten + branchsalemap.get(branchCode);
-								
+
 
 				long syouhin = Long.parseLong(rcdRead.get(2));
 				long Ctotal = syouhin +  commoditysalemap.get(commodityCode);
-				
+
 
 				if(Btotal >= 10000000000L || Ctotal >= 10000000000L){
 					System.out.println("合計金額が10桁を超えました");
@@ -106,12 +108,13 @@ public class WorkUriagesyuukei {
 				}
 				branchsalemap.put(branchCode,Btotal);
 				commoditysalemap.put(commodityCode,Ctotal);
-				
+
 			}catch (FileNotFoundException a) {
 				System.out.println("予期せぬエラーが発生しました");
 				return;
 			}catch (IOException e) {
 				System.out.println("予期せぬエラーが発生しました");
+				return;
 			}finally{
 				try{
 					if(br !=null){
@@ -123,6 +126,7 @@ public class WorkUriagesyuukei {
 				}
 			}
 		}
+
 
 		if(!fileout(args[0],"branch.out",branchnamemap,branchsalemap)){
 			return;
@@ -151,7 +155,6 @@ public class WorkUriagesyuukei {
 					System.out.println(fileExist + "定義ファイルのフォーマットが不正です");
 					return false;
 				}
-
 
 				namemap.put(array[0],array[1]);
 				salemap.put(array[0],0L);
