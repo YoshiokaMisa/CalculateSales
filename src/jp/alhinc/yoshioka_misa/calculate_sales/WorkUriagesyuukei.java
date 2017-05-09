@@ -24,12 +24,12 @@ public class WorkUriagesyuukei {
 			return;
 		}
 
-		HashMap<String, String>  branchNameMap = new HashMap<String, String>();
-		HashMap<String, Long>  branchSaleMap = new HashMap<String, Long>();
+		HashMap<String, String> branchNameMap = new HashMap<>();
+		HashMap<String, Long> branchSaleMap = new HashMap<>();
 		BufferedReader br =null;
 
-		HashMap<String, String>  commodityNameMap = new HashMap<String, String>();
-		HashMap<String, Long>  commoditySaleMap = new HashMap<String, Long>();
+		HashMap<String, String> commodityNameMap = new HashMap<>();
+		HashMap<String, Long> commoditySaleMap = new HashMap<>();
 
 
 		if(!fileRead(args[0], "branch.lst", "支店", "[0-9]{3}$", branchNameMap, branchSaleMap)){
@@ -62,7 +62,7 @@ public class WorkUriagesyuukei {
 
 			try{
 				String s;
-				FileReader fr = new FileReader (rcdFiles.get(i));
+				FileReader fr = new FileReader(rcdFiles.get(i));
 				br =new BufferedReader(fr);
 
 				while((s = br.readLine())!= null){
@@ -90,14 +90,14 @@ public class WorkUriagesyuukei {
 				}
 
 				long branch = Long.parseLong(rcdRead.get(2));
-				long branchTotal = branch + branchSaleMap.get(branchCode);
+				Long branchTotal = branch + branchSaleMap.get(branchCode);
 
 
 				long commodity = Long.parseLong(rcdRead.get(2));
-				long commodityTotal = commodity + commoditySaleMap.get(commodityCode);
+				Long commodityTotal = commodity + commoditySaleMap.get(commodityCode);
 
 
-				if(branchTotal>= 10000000000L || commodityTotal >= 10000000000L){
+				if(branchTotal.toString().length() > 10 || commodityTotal.toString().length() > 10){
 					System.out.println("合計金額が10桁を超えました");
 					return;
 				}
@@ -131,8 +131,8 @@ public class WorkUriagesyuukei {
 		}
 	}
 
-	public static boolean fileRead (String dirPath, String fileName, String fileExist, String code,
-			HashMap<String, String>  nameMap, HashMap<String, Long>  saleMap){
+	public static boolean fileRead(String dirPath, String fileName, String fileExist, String code,
+			HashMap<String, String> nameMap, HashMap<String, Long> saleMap){
 		BufferedReader br = null;
 		try{
 			File file = new File (dirPath, fileName);
@@ -147,8 +147,8 @@ public class WorkUriagesyuukei {
 			while((s = br.readLine()) != null){
 				String[] array = s.split(",");
 				if(array.length != 2 || !array[0].matches(code)){
-				System.out.println(fileExist + "定義ファイルのフォーマットが不正です");
-				return false;
+					System.out.println(fileExist + "定義ファイルのフォーマットが不正です");
+					return false;
 				}
 
 				nameMap.put(array[0],array[1]);
@@ -171,14 +171,14 @@ public class WorkUriagesyuukei {
 		return true;
 	}
 
-	public static boolean fileOut (String dirPath, String fileName,
-			HashMap<String, String>  nameMap, HashMap<String, Long>  saleMap){
+	public static boolean fileOut(String dirPath, String fileName,
+			HashMap<String, String> nameMap, HashMap<String, Long> saleMap){
 		List<Entry<String, Long>> total =
 				new ArrayList<Entry<String, Long>>(saleMap.entrySet());
 		Collections.sort(total, new Comparator<Entry<String,Long>>() {
 			public int compare(
 			Entry<String, Long> entry1, Entry<String, Long> entry2) {
-			return ((Long)entry2.getValue()).compareTo((Long)entry1.getValue());
+			return (entry2.getValue()).compareTo(entry1.getValue());
 			}
 		});
 
