@@ -32,15 +32,15 @@ public class WorkUriagesyuukei {
 		HashMap<String, Long>  commoditysalemap = new HashMap< String, Long>();
 
 
-		if(!fileRead1(args[0],"branch.lst","支店","[0-9]{3}$",branchnamemap, branchsalemap)){
+		if(!fileRead(args[0], "branch.lst", "支店", "[0-9]{3}$", branchnamemap, branchsalemap)){
 			return;
 		}
-		if(!fileRead1(args[0],"commodity.lst","商品","[A-Za-z0-9]{8}",commoditynamemap, commoditysalemap)){
+		if(!fileRead(args[0], "commodity.lst", "商品", "[A-Za-z0-9]{8}", commoditynamemap, commoditysalemap)){
 			return;
 		}
 
 		File dir = new File(args[0]);
-		ArrayList<File> rcdFiles =new ArrayList<File>();
+		ArrayList<File> rcdFiles = new ArrayList<File>();
 		File[] files = dir.listFiles();
 		for (int i = 0; i <files.length; i ++){
 			if (files[i].isFile() && (files[i].getName().matches("[0-9]{8}.rcd"))){
@@ -48,15 +48,10 @@ public class WorkUriagesyuukei {
 			}
 		}
 		for(int i =0 ;i<rcdFiles.size()-1; i++){
-			String r= rcdFiles.get(i).getName();
-			String ren= r.substring(0, 8);
-			int Code= Integer.parseInt(ren);
+			int Number = Integer.parseInt(rcdFiles.get(i).getName().substring(0, 8));
+			int NextNumber = Integer.parseInt(rcdFiles.get(i+1).getName().substring(0, 8));
 
-			String rr=rcdFiles.get(i+1).getName();
-			String rren= rr.substring(0, 8);
-			int Code2= Integer.parseInt(rren);
-
-			if( Code2- Code != 1){
+			if( NextNumber- Number != 1){
 				System.out.println("売上ファイル名が連番になっていません");
 				return;
 			}
@@ -70,11 +65,11 @@ public class WorkUriagesyuukei {
 				 FileReader fr = new FileReader (rcdFiles.get(i));
 				 br =new BufferedReader(fr);
 
-				while((s= br.readLine())!= null){
+				while((s = br.readLine())!= null){
 					rcdRead.add(s);
 				}
 				String branchCode = rcdRead.get(0);
-				String commodityCode =rcdRead.get(1);
+				String commodityCode = rcdRead.get(1);
 
 				if(rcdRead.size() !=3){
 					System.out.println(rcdFiles.get(i).getName()+"のフォーマットが不正です");
@@ -95,7 +90,7 @@ public class WorkUriagesyuukei {
 				}
 
 				long siten = Long.parseLong(rcdRead.get(2));
-				long Btotal =siten + branchsalemap.get(branchCode);
+				long Btotal = siten + branchsalemap.get(branchCode);
 
 
 				long syouhin = Long.parseLong(rcdRead.get(2));
@@ -128,17 +123,17 @@ public class WorkUriagesyuukei {
 		}
 
 
-		if(!fileout(args[0],"branch.out",branchnamemap,branchsalemap)){
+		if(!fileOut(args[0], "branch.out", branchnamemap, branchsalemap)){
 			return;
 		}
-		if(!fileout(args[0],"commodity.out",commoditynamemap,commoditysalemap)){
+		if(!fileOut(args[0], "commodity.out", commoditynamemap, commoditysalemap)){
 			return;
 		}
 	}
 
-	public static boolean fileRead1 (String dirpath, String fileName, String fileExist, String code,
-			HashMap<String, String>  namemap,HashMap<String, Long>  salemap){
-		BufferedReader br =null;
+	public static boolean fileRead (String dirpath, String fileName, String fileExist, String code,
+			HashMap<String, String>  namemap, HashMap<String, Long>  salemap){
+		BufferedReader br = null;
 		try{
 			File file = new File (dirpath, fileName);
 			if (!file.exists()) {
@@ -149,8 +144,8 @@ public class WorkUriagesyuukei {
 			br = new BufferedReader(fr);
 
 			String s;
-			while((s= br.readLine())!= null){
-				String[] array= s.split(",");
+			while((s = br.readLine()) != null){
+				String[] array = s.split(",");
 				if( array.length != 2 || !array[0].matches(code)){
 					System.out.println(fileExist + "定義ファイルのフォーマットが不正です");
 					return false;
@@ -164,7 +159,7 @@ public class WorkUriagesyuukei {
 			return false;
 		}finally{
 			try{
-				if(br !=null){
+				if(br != null){
 					br.close();
 				}
 			}
@@ -176,13 +171,13 @@ public class WorkUriagesyuukei {
 		return true;
 	}
 
-	public static boolean fileout (String dirpath, String fileName,
-			HashMap<String, String>  namemap,HashMap<String, Long>  salemap){
-		List<Entry<String,Long>> total =
-				new ArrayList<Entry<String,Long>>(salemap.entrySet());
+	public static boolean fileOut (String dirpath, String fileName,
+			HashMap<String, String>  namemap, HashMap<String, Long>  salemap){
+		List<Entry<String, Long>> total =
+				new ArrayList<Entry<String, Long>>(salemap.entrySet());
 				Collections.sort(total, new Comparator<Entry<String,Long>>() {
 					public int compare(
-					Entry<String,Long> entry1, Entry<String,Long> entry2) {
+					Entry<String, Long> entry1, Entry<String, Long> entry2) {
 					return ((Long)entry2.getValue()).compareTo((Long)entry1.getValue());
 					}
 				});
@@ -193,9 +188,9 @@ public class WorkUriagesyuukei {
 		try{
 			FileWriter fw;
 			fw = new FileWriter(file);
-			bw =new BufferedWriter(fw);
+			bw = new BufferedWriter(fw);
 			for(Entry<String, Long> entry : total){
-				bw.write(entry.getKey()+","+namemap.get(entry.getKey())+","+entry.getValue());
+				bw.write(entry.getKey() + "," + namemap.get(entry.getKey()) + "," + entry.getValue());
 				bw.newLine();
 			}
 		}catch (IOException e) {
@@ -203,7 +198,7 @@ public class WorkUriagesyuukei {
 			return false;
 		}finally{
 			try{
-				if(bw !=null){
+				if(bw != null){
 					bw.close();
 				}
 			}catch (IOException e) {
